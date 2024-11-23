@@ -101,7 +101,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.15.2-R0.1-SNAPSHOT</version>
+            <version>1.20.4-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -131,13 +131,19 @@
         <dependency>
             <groupId>io.papermc</groupId>
             <artifactId>paperlib</artifactId>
-            <version>1.0.6</version>
+            <version>1.0.7</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.github.Be4rJP</groupId>
             <artifactId>ChiyogamiLib</artifactId>
             <version>71d7778b4c</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.bstats</groupId>
+            <artifactId>bstats-bukkit</artifactId>
+            <version>3.0.2</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

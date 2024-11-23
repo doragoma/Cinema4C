@@ -23,8 +23,8 @@ public class NMSUtil {
         Class<?> nmsClass = nmsClassMap.get(nmsClassString);
         
         if(nmsClass == null){
-            String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3] + ".";
-            String name = "net.minecraft.server." + version + nmsClassString;
+            String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
+            String name = nmsClassString.replace("VER.", "");
             nmsClass = Class.forName(name);
             nmsClassMap.put(nmsClassString, nmsClass);
         }
@@ -102,8 +102,8 @@ public class NMSUtil {
     public static int getEntityID(Object entity)
             throws ClassNotFoundException, SecurityException, NoSuchMethodException, NoSuchFieldException,
             IllegalArgumentException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        
-        Class<?> Entity = getNMSClass("Entity");
+
+        Class<?> Entity = getNMSClass("net.minecraft.world.VER.entity.Entity");
         Method getBukkitEntity = Entity.getMethod("getBukkitEntity");
         Object bukkitEntity = getBukkitEntity.invoke(entity);
         
@@ -114,8 +114,8 @@ public class NMSUtil {
     public static Location getEntityLocation(Object entity)
             throws ClassNotFoundException, SecurityException, NoSuchMethodException, NoSuchFieldException,
             IllegalArgumentException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        
-        Class<?> Entity = getNMSClass("Entity");
+
+        Class<?> Entity = getNMSClass("net.minecraft.world.VER.entity.Entity");
         Method getBukkitEntity = Entity.getMethod("getBukkitEntity");
         Object bukkitEntity = getBukkitEntity.invoke(entity);
         return ((org.bukkit.entity.Entity)bukkitEntity).getLocation();
@@ -126,12 +126,12 @@ public class NMSUtil {
             throws ClassNotFoundException, SecurityException, NoSuchMethodException, NoSuchFieldException,
             IllegalArgumentException, IllegalAccessException, InvocationTargetException, InstantiationException {
         
-        Class<?> PlayerInteractManager = getNMSClass("PlayerInteractManager");
-        Class<?> WorldServer = getNMSClass("WorldServer");
+        Class<?> PlayerInteractManager = getNMSClass("net.minecraft.server.VER.level.PlayerInteractManager");
+        Class<?> WorldServer = getNMSClass("net.minecraft.server.VER.level.WorldServer");
         Object interactManager = PlayerInteractManager.getConstructor(WorldServer).newInstance(nmsWorld);
         
-        Class<?> MinecraftServer = getNMSClass("MinecraftServer");
-        Class<?> EntityPlayer = getNMSClass("EntityPlayer");
+        Class<?> MinecraftServer = getNMSClass("net.minecraft.server.VER.MinecraftServer");
+        Class<?> EntityPlayer = getNMSClass("net.minecraft.server.VER.level.EntityPlayer");
         return EntityPlayer.getConstructor(MinecraftServer, WorldServer, GameProfile.class, PlayerInteractManager).newInstance(nmsServer, nmsWorld, gameProfile, interactManager);
     }
     
@@ -140,7 +140,7 @@ public class NMSUtil {
             throws ClassNotFoundException, SecurityException, NoSuchMethodException, NoSuchFieldException,
             IllegalArgumentException, IllegalAccessException, InvocationTargetException, InstantiationException {
         
-        Class<?> EntityArmorStand = getNMSClass("EntityArmorStand");
+        Class<?> EntityArmorStand = getNMSClass("net.minecraft.world.VER.entity.decoraton.EntityArmorStand");
         Class<?> NMSWorld = getNMSClass("World");
         Object entityArmorStand = null;
         try {
@@ -163,8 +163,8 @@ public class NMSUtil {
     public static void setEntityPositionRotation(Object entity, double x, double y, double z, float yaw, float pitch)
             throws ClassNotFoundException, SecurityException, NoSuchMethodException, NoSuchFieldException,
             IllegalArgumentException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        
-        Class<?> Entity = getNMSClass("Entity");
+
+        Class<?> Entity = getNMSClass("net.minecraft.world.VER.entity.Entity");
         Method setPositionRotation = Entity.getMethod("setPositionRotation", double.class, double.class, double.class, float.class, float.class);
         setPositionRotation.invoke(entity, x, y, z, yaw, pitch);
     }
@@ -174,7 +174,7 @@ public class NMSUtil {
             throws ClassNotFoundException, SecurityException, NoSuchMethodException, NoSuchFieldException,
             IllegalArgumentException, IllegalAccessException, InvocationTargetException, InstantiationException {
         
-        Method sendPacket = getNMSClass("PlayerConnection").getMethod("sendPacket", getNMSClass("Packet"));
+        Method sendPacket = getNMSClass("network.PlayerConnection").getMethod("sendPacket", getNMSClass("Packet"));
         sendPacket.invoke(getConnection(player), packet);
     }
     
@@ -182,13 +182,13 @@ public class NMSUtil {
     public static Object createGameStateChangePacket(int i, float j)
             throws ClassNotFoundException, SecurityException, NoSuchMethodException, NoSuchFieldException,
             IllegalArgumentException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        
-        Class<?> packetClass = getNMSClass("PacketPlayOutGameStateChange");
+
+        Class<?> packetClass = getNMSClass("net.minecraft.network.VER.protocol.game.PacketPlayOutGameStateChange");
         try {
             Constructor<?> packetConstructor = packetClass.getConstructor(int.class, float.class);
             return packetConstructor.newInstance(i, j);
         }catch (NoSuchMethodException e){
-            Class<?> classA = getNMSClass("PacketPlayOutGameStateChange$a");
+            Class<?> classA = getNMSClass("net.minecraft.network.VER.protocol.game.PacketPlayOutGameStateChange$a");
             Field a = packetClass.getFields()[i];
             Constructor<?> packetConstructor = packetClass.getConstructor(classA, float.class);
             return packetConstructor.newInstance(a.get(null), j);
@@ -200,8 +200,8 @@ public class NMSUtil {
             throws ClassNotFoundException, SecurityException, NoSuchMethodException, NoSuchFieldException,
             IllegalArgumentException, IllegalAccessException, InvocationTargetException, InstantiationException {
         
-        Class<?> packetClass = getNMSClass("PacketPlayOutCamera");
-        Class<?> Entity = getNMSClass("Entity");
+        Class<?> packetClass = getNMSClass("net.minecraft.network.VER.protocol.game.PacketPlayOutCamera");
+        Class<?> Entity = getNMSClass("net.minecraft.world.VER.entity.Entity");
         Constructor<?> packetConstructor = packetClass.getConstructor(Entity);
         return packetConstructor.newInstance(entity);
     }
@@ -211,7 +211,7 @@ public class NMSUtil {
             throws ClassNotFoundException, SecurityException, NoSuchMethodException, NoSuchFieldException,
             IllegalArgumentException, IllegalAccessException, InvocationTargetException, InstantiationException {
         
-        Class<?> packetClass = getNMSClass("PacketPlayOutEntity$PacketPlayOutRelEntityMoveLook");
+        Class<?> packetClass = getNMSClass("net.minecraft.network.VER.protocol.game.PacketPlayOutEntity$PacketPlayOutRelEntityMoveLook");
         Constructor<?> packetConstructor = packetClass.getConstructor(int.class, short.class, short.class, short.class, byte.class, byte.class, boolean.class);
         return packetConstructor.newInstance(entityID, (short) 0, (short) 0, (short) 0, (byte)yaw, (byte)pitch, true);
     }
@@ -220,8 +220,8 @@ public class NMSUtil {
     public static Object createEntityMoveLookPacket(int entityID, double deltaX, double deltaY, double deltaZ, float yaw, float pitch)
             throws ClassNotFoundException, SecurityException, NoSuchMethodException, NoSuchFieldException,
             IllegalArgumentException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        
-        Class<?> packetClass = getNMSClass("PacketPlayOutEntity$PacketPlayOutRelEntityMoveLook");
+
+        Class<?> packetClass = getNMSClass("net.minecraft.network.VER.protocol.game.PacketPlayOutEntity$PacketPlayOutRelEntityMoveLook");
         Constructor<?> packetConstructor = packetClass.getConstructor(int.class, short.class, short.class, short.class, byte.class, byte.class, boolean.class);
         return packetConstructor.newInstance(entityID, (short) (deltaX * 4096), (short) (deltaY * 4096), (short) (deltaZ * 4096), (byte)yaw, (byte)pitch, true);
     }
@@ -231,8 +231,8 @@ public class NMSUtil {
             throws ClassNotFoundException, SecurityException, NoSuchMethodException, NoSuchFieldException,
             IllegalArgumentException, IllegalAccessException, InvocationTargetException, InstantiationException {
         
-        Class<?> packetClass = getNMSClass("PacketPlayOutEntityHeadRotation");
-        Class<?> Entity = getNMSClass("Entity");
+        Class<?> packetClass = getNMSClass("net.minecraft.network.VER.protocol.game.PacketPlayOutEntityHeadRotation");
+        Class<?> Entity = getNMSClass("net.minecraft.world.VER.entity.Entity");
         Constructor<?> packetConstructor = packetClass.getConstructor(Entity, byte.class);
         return packetConstructor.newInstance(entity, (byte)yaw);
     }
@@ -242,8 +242,8 @@ public class NMSUtil {
             throws ClassNotFoundException, SecurityException, NoSuchMethodException, NoSuchFieldException,
             IllegalArgumentException, IllegalAccessException, InvocationTargetException, InstantiationException {
         
-        Class<?> packetClass = getNMSClass("PacketPlayOutEntityTeleport");
-        Class<?> Entity = getNMSClass("Entity");
+        Class<?> packetClass = getNMSClass("net.minecraft.network.VER.protocol.game.PacketPlayOutEntityTeleport");
+        Class<?> Entity = getNMSClass("net.minecraft.world.VER.entity.Entity");
         Constructor<?> packetConstructor = packetClass.getConstructor(Entity);
         return packetConstructor.newInstance(entity);
     }
@@ -253,8 +253,8 @@ public class NMSUtil {
             throws ClassNotFoundException, SecurityException, NoSuchMethodException, NoSuchFieldException,
             IllegalArgumentException, IllegalAccessException, InvocationTargetException, InstantiationException {
         
-        Class<?> packetClass = getNMSClass("PacketPlayOutEntityDestroy");
-        Class<?> Entity = getNMSClass("Entity");
+        Class<?> packetClass = getNMSClass("net.minecraft.network.VER.protocol.game.PacketPlayOutEntityDestroy");
+        Class<?> Entity = getNMSClass("net.minecraft.world.VER.entity.Entity");
         
         Method getBukkitEntity = Entity.getMethod("getBukkitEntity");
         Object bukkitEntity = getBukkitEntity.invoke(entity);
@@ -269,8 +269,8 @@ public class NMSUtil {
             throws ClassNotFoundException, SecurityException, NoSuchMethodException, NoSuchFieldException,
             IllegalArgumentException, IllegalAccessException, InvocationTargetException, InstantiationException {
         
-        Class<?> packetClass = getNMSClass("PacketPlayOutAnimation");
-        Class<?> Entity = getNMSClass("Entity");
+        Class<?> packetClass = getNMSClass("net.minecraft.network.VER.protocol.game.PacketPlayOutAnimation");
+        Class<?> Entity = getNMSClass("net.minecraft.world.VER.entity.Entity");
         Constructor<?> packetConstructor = packetClass.getConstructor(Entity, int.class);
         return packetConstructor.newInstance(entity, animation);
     }
@@ -280,8 +280,8 @@ public class NMSUtil {
             throws ClassNotFoundException, SecurityException, NoSuchMethodException, NoSuchFieldException,
             IllegalArgumentException, IllegalAccessException, InvocationTargetException, InstantiationException {
         
-        Class<?> packetClass = getNMSClass("PacketPlayOutSpawnEntityLiving");
-        Class<?> LivingEntity = getNMSClass("EntityLiving");
+        Class<?> packetClass = getNMSClass("net.minecraft.network.VER.protocol.game.PacketPlayOutSpawnEntity");//Living
+        Class<?> LivingEntity = getNMSClass("net.minecraft.world.VER.entity.EntityLiving");
         Constructor<?> packetConstructor = packetClass.getConstructor(LivingEntity);
         return packetConstructor.newInstance(entity);
     }
@@ -291,8 +291,8 @@ public class NMSUtil {
             throws ClassNotFoundException, SecurityException, NoSuchMethodException, NoSuchFieldException,
             IllegalArgumentException, IllegalAccessException, InvocationTargetException, InstantiationException {
         
-        Class<?> packetClass = getNMSClass("PacketPlayOutNamedEntitySpawn");
-        Class<?> EntityHuman = getNMSClass("EntityHuman");
+        Class<?> packetClass = getNMSClass("net.minecraft.network.VER.protocol.game.PacketPlayOutNamedEntitySpawn");
+        Class<?> EntityHuman = getNMSClass("net.minecraft.world.VER.entity.player.EntityHuman");
         Constructor<?> packetConstructor = packetClass.getConstructor(EntityHuman);
         return packetConstructor.newInstance(entity);
     }
@@ -301,8 +301,8 @@ public class NMSUtil {
     public static Object getDataWatcher(Object entity)
             throws ClassNotFoundException, SecurityException, NoSuchMethodException, NoSuchFieldException,
             IllegalArgumentException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        
-        Class<?> Entity = getNMSClass("Entity");
+
+        Class<?> Entity = getNMSClass("net.minecraft.world.VER.entity.Entity");
         Method getDataWatcher = Entity.getMethod("getDataWatcher");
         return getDataWatcher.invoke(entity);
     }
@@ -312,8 +312,8 @@ public class NMSUtil {
             throws ClassNotFoundException, SecurityException, NoSuchMethodException, NoSuchFieldException,
             IllegalArgumentException, IllegalAccessException, InvocationTargetException, InstantiationException {
         
-        Class<?> DataWatcher = getNMSClass("DataWatcher");
-        Class<?> DataWatcherRegistry = getNMSClass("DataWatcherRegistry");
+        Class<?> DataWatcher = getNMSClass("net.minecraft.network.VER.syncher.DataWatcher");
+        Class<?> DataWatcherRegistry = getNMSClass("DataWatcherRegistry"); //todo:!!
         
         Field a = DataWatcherRegistry.getField("a");
         Object serializer = a.get(null);
@@ -333,16 +333,16 @@ public class NMSUtil {
     public static void setEntityPose(Object dataWatcher, String pose)
             throws ClassNotFoundException, SecurityException, NoSuchMethodException, NoSuchFieldException,
             IllegalArgumentException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        
-        Class<?> DataWatcher = getNMSClass("DataWatcher");
-        Class<?> DataWatcherRegistry = getNMSClass("DataWatcherRegistry");
+
+        Class<?> DataWatcher = getNMSClass("net.minecraft.network.VER.syncher.DataWatcher");
+        Class<?> DataWatcherRegistry = getNMSClass("DataWatcherRegistry"); //todo:!!
         
         Field s = DataWatcherRegistry.getField("s");
         Object serializer = s.get(null);
         Method ma = serializer.getClass().getMethod("a", int.class);
         Object dataObject = ma.invoke(serializer, 6);
     
-        Class<?> EntityPose = getNMSClass("EntityPose");
+        Class<?> EntityPose = getNMSClass("net.minecraft.world.VER.entity.EntityPose");
         Object pe = null;
         for (Object o: EntityPose.getEnumConstants()) {
             if(o.toString().equals(pose))
@@ -363,7 +363,7 @@ public class NMSUtil {
             throws ClassNotFoundException, SecurityException, NoSuchMethodException, NoSuchFieldException,
             IllegalArgumentException, IllegalAccessException, InvocationTargetException, InstantiationException {
     
-        Class<?> EntityPlayer = getNMSClass("EntityPlayer");
+        Class<?> EntityPlayer = getNMSClass("net.minecraft.server.VER.level.EntityPlayer");
         return (boolean)EntityPlayer.getMethod("isSneaking").invoke(entity);
     }
     
@@ -371,8 +371,8 @@ public class NMSUtil {
     public static void setSneaking(Object entity, boolean flag)
             throws ClassNotFoundException, SecurityException, NoSuchMethodException, NoSuchFieldException,
             IllegalArgumentException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        
-        Class<?> EntityPlayer = getNMSClass("EntityPlayer");
+
+        Class<?> EntityPlayer = getNMSClass("net.minecraft.server.VER.level.EntityPlayer");
         EntityPlayer.getMethod("setSneaking", boolean.class).invoke(entity, flag);
     }
     
@@ -381,9 +381,9 @@ public class NMSUtil {
             throws ClassNotFoundException, SecurityException, NoSuchMethodException, NoSuchFieldException,
             IllegalArgumentException, IllegalAccessException, InvocationTargetException, InstantiationException {
         
-        Class<?> packetClass = getNMSClass("PacketPlayOutEntityMetadata");
-        Class<?> Entity = getNMSClass("Entity");
-        Class<?> DataWatcher = getNMSClass("DataWatcher");
+        Class<?> packetClass = getNMSClass("net.minecraft.network.VER.protocol.game.PacketPlayOutEntityMetadata");
+        Class<?> Entity = getNMSClass("net.minecraft.world.VER.entity.Entity");
+        Class<?> DataWatcher = getNMSClass("net.minecraft.network.VER.syncher.DataWatcher");
         
         Method getDataWatcher = Entity.getMethod("getDataWatcher");
         Object dataWatcher = getDataWatcher.invoke(entity);
@@ -400,10 +400,10 @@ public class NMSUtil {
             throws ClassNotFoundException, SecurityException, NoSuchMethodException, NoSuchFieldException,
             IllegalArgumentException, IllegalAccessException, InvocationTargetException, InstantiationException {
     
-        Class<?> PacketPlayOutPlayerInfo = getNMSClass("PacketPlayOutPlayerInfo");
-        Class<?> EntityPlayer = getNMSClass("EntityPlayer");
+        Class<?> PacketPlayOutPlayerInfo = getNMSClass("net.minecraft.network.VER.protocol.game.PacketPlayOutPlayerInfo");
+        Class<?> EntityPlayer = getNMSClass("net.minecraft.server.VER.level.EntityPlayer");
     
-        Class<?> EnumPlayerInfoAction = getNMSClass("PacketPlayOutPlayerInfo$EnumPlayerInfoAction");
+        Class<?> EnumPlayerInfoAction = getNMSClass("net.minecraft.network.VER.protocol.game.PacketPlayOutPlayerInfo$EnumPlayerInfoAction");
         Object e = null;
         for (Object o: EnumPlayerInfoAction.getEnumConstants()) {
             if(o.toString().equals(action))
@@ -423,10 +423,10 @@ public class NMSUtil {
             throws ClassNotFoundException, SecurityException, NoSuchMethodException, NoSuchFieldException,
             IllegalArgumentException, IllegalAccessException, InvocationTargetException, InstantiationException {
         
-        Class<?> packetClass = getNMSClass("PacketPlayOutEntityEquipment");
+        Class<?> packetClass = getNMSClass("net.minecraft.network.VER.protocol.game.PacketPlayOutEntityEquipment");
         Class<?> CraftItemStack = getCraftBukkitClass("inventory.CraftItemStack");
-        Class<?> ItemStack = getNMSClass("ItemStack");
-        Class<?> EnumItemSlot = getNMSClass("EnumItemSlot");
+        Class<?> ItemStack = getNMSClass("net.minecraft.world.VER.item.ItemStack");
+        Class<?> EnumItemSlot = getNMSClass("net.minecraft.world.VER.entity.EnumItemSlot");
         
         Object slot = null;
         for (Object o: EnumItemSlot.getEnumConstants()) {

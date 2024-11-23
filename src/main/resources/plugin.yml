@@ -1,7 +1,7 @@
 name: Cinema4C
 version: ${project.version}
 main: be4rjp.cinema4c.Cinema4C
-api-version: 1.15
+api-version: 1.20
 depend: [WorldEdit]
 #--------------------------------------
 commands:
